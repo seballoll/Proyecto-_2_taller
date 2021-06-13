@@ -7,9 +7,9 @@ from pygame.locals import *
 pygame.init()
 clock = pygame.time.Clock()  # function for the timer
 timer = 0  # inital value
-PRINCIPALSCREEN1 = pygame.display.set_mode([500, 700])  # to pop up the screen
-pygame.display.set_caption('Operation Moon light')  # title
-icon1 = pygame.image.load("photos/darth vader.png") # icon
+PRINCIPALSCREEN1 = pygame.display.set_mode([700, 700])  # to pop up the screen
+pygame.display.set_caption('Ninja Dash')  # title
+icon1 = pygame.image.load("ninja .png") # icon
 pygame.display.set_icon(icon1)
 
 
@@ -31,7 +31,21 @@ textofinstructions = fontofsubtitle.render("Instructions", 0, (255, 255, 255))
 textofaboutinfo = fontofsubtitle.render("About", 0, (255, 255, 255))
 textofleaderboard = fontofsubtitle.render("Leaderboard", 0, (255, 255, 255))
 
+#-------------------------------------------- Background images class -------------------------------------------------#
 
+class backgroun_image:
+    def __init__(self,level):
+        self.level = level
+        self.bg1 = pygame.image.load("bamboo forest.jpg")
+        self.bg2 = pygame.image.load("sakura forest.jpg")
+        self.bg3 = pygame.image.load("torii.jpg")
+    def choose_level(self):
+        if self.level == 1:
+            return self.bg1
+        elif self.level ==2:
+            return  self.bg2
+        elif self.level == 3:
+            return self.bg3
 
 # ------------------------------------------ Function of the principal screen -----------------------------------------#
 
@@ -47,6 +61,7 @@ def mainscreen():
     clickbutton = False
     active = False
     usertext = ''
+    bg1 = pygame.image.load("dojo.jpg")
     while True:
         PRINCIPALSCREEN1.fill((0, 0, 0)) # to fill the screen
 
@@ -58,6 +73,7 @@ def mainscreen():
         instructions = pygame.Rect(175, 350, 150, 25)
         about = pygame.Rect(175, 400, 150, 25)
         leaderboard = pygame.Rect(175, 450, 150, 25)
+        PRINCIPALSCREEN1.blit(bg1,(0,0))
         #rectangles of the principal screen positions and dimensions on x,y
 
         if level1.collidepoint((mx, my)):
@@ -128,7 +144,6 @@ def mainscreen():
         textsurface = fontofname.render(usertext, True, (255, 255, 255))
         PRINCIPALSCREEN1.blit(textsurface, (inputrectangle.x + 5, inputrectangle.y + 5))
         inputrectangle.w = max(150, textsurface.get_width() + 10)
-
         PRINCIPALSCREEN1.blit(textoftitle, (100, 50))  # it writes the titles of the rectangles
         PRINCIPALSCREEN1.blit(textofsubtitle, (175, 100))
         PRINCIPALSCREEN1.blit(textofindication, (160, 165))
@@ -142,9 +157,9 @@ def mainscreen():
         clock.tick(60)
 
 #-------------------SPACESHIP CONFIG-------------------------
-BABY_YODA_SPACESHIP_IMAGE = pygame.image.load("photos/babyyoda.png")
+BABY_YODA_SPACESHIP_IMAGE = pygame.image.load("ninja .png")
 BABY_YODA_SPACESHIP = pygame.transform.scale(BABY_YODA_SPACESHIP_IMAGE, (50, 50))
-DARTH_VADER_IMAGE = pygame.image.load("photos/darth vader.png")
+DARTH_VADER_IMAGE = pygame.image.load("shuriken.png")
 DARTH_VADER = pygame.transform.scale(DARTH_VADER_IMAGE, (50, 50))  # to scale the photos
 DARTHVADERGOTHIT = pygame.USEREVENT  # event when darth vader get damage
 YODAGOTHIT = pygame.USEREVENT + 2   # event when baby yoda get damage
@@ -165,8 +180,9 @@ def baby_yoda_movement(keysmovement, babyyoda):
 
 
 # ---------------------------------Function to draw all the variables of the levels-------------------------------#
-def drawscreen(babyyoda, darthvader, baby_yoda_bullets, BABY_YODA_HEALTH, DARTH_VADER_HEALTH, usertext, currenttime):
-    PRINCIPALSCREEN1.fill((255, 255, 255))
+def drawscreen(babyyoda, darthvader, baby_yoda_bullets, BABY_YODA_HEALTH, DARTH_VADER_HEALTH, usertext, currenttime,level):
+    background_image = backgroun_image(level)
+    PRINCIPALSCREEN1.blit(background_image.choose_level(),(0,0))
     baby_yoda_health = fontofhp.render("LIFE:" + str(BABY_YODA_HEALTH), 1, (0, 0, 0))
     darth_vader_health = fontofhp.render("INVADER:" + str(DARTH_VADER_HEALTH), 1, (0, 0, 0))
     usertext = fontofhp.render("NAME:" + str(usertext), 1, (0, 0, 0))
@@ -198,25 +214,6 @@ def drawbullets(baby_yoda_bullets, darthvader):
             baby_yoda_bullets.remove(bullet)
         elif bullet.y < 0:
             baby_yoda_bullets.remove(bullet)  # if the bullet it's out of the screen it get deleted
-
-#def enemybullets(darth_vader_bullets, babyyoda, darthvader):
- #   for bullet in darth_vader_bullets:
-  #      bullet.y += 7
-   #     if darthvader.timer == 120:
-    #        darthvader.timer = 0
-     #       darthvader.shoot = True
-      #      if babyyoda.x < bullet.x < babyyoda.x + 50 and babyyoda.y < bullet.y < babyyoda.y + 50:
-       #         darthvader.shoot = True
-        #        global BABY_YODA_HEALTH
-         #       BABY_YODA_HEALTH += 1
-          #      pygame.event.post(pygame.event.Event(YODAGOTHIT))
-           #     darth_vader_bullets.remove(bullet)
-            #elif bullet.y < 0:
-            #    darth_vader_bullets.remove(bullet)
-   #     elif darthvader.timer == 30 and darthvader.shoot == True:
-     #       darthvader.readyshoot = True
-    #    else:
-      #      darthvader.timer += 1
 
 
 # -----------------------Function to manipulate in a better way how the enemy moves-------------------------#
@@ -348,7 +345,7 @@ def screenlevel1(usertext):
             timer += 1
         keysmovement = pygame.key.get_pressed()
         baby_yoda_movement(keysmovement, babyyoda)
-        drawscreen(babyyoda, darthvader, baby_yoda_bullets, BABY_YODA_HEALTH, DARTH_VADER_HEALTH, usertext, currenttime)
+        drawscreen(babyyoda, darthvader, baby_yoda_bullets, BABY_YODA_HEALTH, DARTH_VADER_HEALTH, usertext, currenttime, 1)
         drawbullets(baby_yoda_bullets, darthvader)
         pygame.display.update()
         clock.tick(60) # recursivity of the functions every 60 FPS
@@ -414,7 +411,7 @@ def screenlevel2(usertext, score2 = 0):
 
         keysmovement = pygame.key.get_pressed()
         baby_yoda_movement(keysmovement, babyyoda)
-        drawscreen(babyyoda, darthvader, baby_yoda_bullets, BABY_YODA_HEALTH, DARTH_VADER_HEALTH, usertext, currenttime)
+        drawscreen(babyyoda, darthvader, baby_yoda_bullets, BABY_YODA_HEALTH, DARTH_VADER_HEALTH, usertext, currenttime,2)
         drawbullets(baby_yoda_bullets, darthvader)
         pygame.display.update()
         clock.tick(60) # all of the functions called are in the while so they do the recursivity
@@ -488,7 +485,7 @@ def screenlevel3(usertext, score3):
 
         keysmovement = pygame.key.get_pressed()
         baby_yoda_movement(keysmovement, babyyoda)
-        drawscreen(babyyoda, darthvader, baby_yoda_bullets, BABY_YODA_HEALTH, DARTH_VADER_HEALTH, usertext, currenttime)
+        drawscreen(babyyoda, darthvader, baby_yoda_bullets, BABY_YODA_HEALTH, DARTH_VADER_HEALTH, usertext, currenttime,3)
         drawbullets(baby_yoda_bullets, darthvader)
         pygame.display.update()
         clock.tick(60)  # all of the functions called are in the while so they do the recursivity
