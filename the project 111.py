@@ -157,15 +157,30 @@ def mainscreen():
         clock.tick(60)
 
 #-------------------SPACESHIP CONFIG-------------------------
-BABY_YODA_SPACESHIP_IMAGE = pygame.image.load("ninja .png")
-BABY_YODA_SPACESHIP = pygame.transform.scale(BABY_YODA_SPACESHIP_IMAGE, (50, 50))
-DARTH_VADER_IMAGE = pygame.image.load("shuriken.png")
-DARTH_VADER = pygame.transform.scale(DARTH_VADER_IMAGE, (50, 50))  # to scale the photos
+
 DARTHVADERGOTHIT = pygame.USEREVENT  # event when darth vader get damage
 YODAGOTHIT = pygame.USEREVENT + 2   # event when baby yoda get damage
 DARTH_VADER_HEALTH = 30 # values of the HP of the objects
 BABY_YODA_HEALTH = 50
+# ----------------------------------------------- Ninja Class    -------------------------------------------------#
+class Ninja:
+    Ninja_image = pygame.image.load("ninja .png")
+    Ninja = pygame.transform.scale(Ninja_image, (50, 50))
+    speed = [1,0]
+# ----------------------------------------------- Shuriken Class -------------------------------------------------#
+class Shuriken:  # class of the enemy
+    Shuriken_image = pygame.image.load("shuriken.png")
+    shurikenrect = Shuriken_image.get_rect()
+    shurikenrect.update(5, 5, 55, 31)
+    speed = [1, 0]
+    def bounce_positive(self):
+        return random.randint(0, 1)
 
+    def bounce_negative(self):
+        return random.randint(-1, 0)
+
+    def bounce_random(self):
+        return random.randint(-1, 1)
 # -----------------------------------Function for the movement of baby yoda---------------------------------------#
 def baby_yoda_movement(keysmovement, babyyoda):
     if keysmovement[pygame.K_w] and babyyoda.y - 5 > 0:  # going up when u press W
@@ -183,19 +198,19 @@ def baby_yoda_movement(keysmovement, babyyoda):
 def drawscreen(babyyoda, darthvader, baby_yoda_bullets, BABY_YODA_HEALTH, DARTH_VADER_HEALTH, usertext, currenttime,level):
     background_image = backgroun_image(level)
     PRINCIPALSCREEN1.blit(background_image.choose_level(),(0,0))
-    baby_yoda_health = fontofhp.render("LIFE:" + str(BABY_YODA_HEALTH), 1, (0, 0, 0))
-    darth_vader_health = fontofhp.render("INVADER:" + str(DARTH_VADER_HEALTH), 1, (0, 0, 0))
-    usertext = fontofhp.render("NAME:" + str(usertext), 1, (0, 0, 0))
-    scoretext = fontofhp.render("SCORE:" + str(score), 1, (0, 0, 0))
-    currenttime1 = fontofhp.render("TIME:" + str(currenttime), 1, (0, 0, 0)) # text of the variables on levels screen
+    baby_yoda_health = fontofhp.render("LIFE:" + str(BABY_YODA_HEALTH), 1, (232, 54, 0))
+    darth_vader_health = fontofhp.render("INVADER:" + str(DARTH_VADER_HEALTH), 1, (232, 54, 0))
+    usertext = fontofhp.render("NAME:" + str(usertext), 1, (232, 54, 0))
+    scoretext = fontofhp.render("SCORE:" + str(score), 1, (232, 54, 0))
+    currenttime1 = fontofhp.render("TIME:" + str(currenttime), 1, (232, 54, 0)) # text of the variables on levels screen
     PRINCIPALSCREEN1.blit(baby_yoda_health, (10, 650))
     PRINCIPALSCREEN1.blit(darth_vader_health, (100, 650))
     PRINCIPALSCREEN1.blit(usertext, (230, 650))
     PRINCIPALSCREEN1.blit(scoretext, (20, 20))
     PRINCIPALSCREEN1.blit(currenttime1, (400, 20)) # it writes the text
 
-    PRINCIPALSCREEN1.blit(BABY_YODA_SPACESHIP, (babyyoda.x, babyyoda.y))
-    PRINCIPALSCREEN1.blit(DARTH_VADER, (darthvader.x, darthvader.y))
+    PRINCIPALSCREEN1.blit(Ninja.Ninja_image, (babyyoda.x, babyyoda.y))
+    PRINCIPALSCREEN1.blit(Shuriken.Shuriken_image, (Shuriken.shurikenrect))
     for bullet in baby_yoda_bullets:
         pygame.draw.rect(PRINCIPALSCREEN1, (255, 0, 0), bullet)  # it draws the bullets
 
@@ -216,24 +231,8 @@ def drawbullets(baby_yoda_bullets, darthvader):
             baby_yoda_bullets.remove(bullet)  # if the bullet it's out of the screen it get deleted
 
 
-# -----------------------Function to manipulate in a better way how the enemy moves-------------------------#
-class darthvader1:  # class of the enemy
-    def __init__(darthvader, x, y):
-        darthvader.x = x
-        darthvader.y = y
-        darthvader.timer = 0
-        darthvader.charge = False
-        darthvader.attack = False
-        darthvader.colliderect = False
-        darthvader.readycharge = False
-        darthvader.left = False
-        darthvader.readyshoot = False
-        darthvader.shoot = False
-        darthvader.invading = True  # initial values
-
-
 # --------------Function for the movement of Darth Vader in the first and third level--------------------#
-def darthvadermoving(darthvader, DARTHVADERVELOCITY, ATTACKVELOCITY, babyyoda):
+'''def darthvadermoving(darthvader, DARTHVADERVELOCITY, ATTACKVELOCITY, babyyoda):
     if darthvader.attack == False:  # it moves to the right and to the left constantly
         if darthvader.x - DARTHVADERVELOCITY <= 0 and darthvader.left == True:
             darthvader.left = False  # if it's too close to the left border it starts to move right
@@ -264,7 +263,7 @@ def darthvadermoving(darthvader, DARTHVADERVELOCITY, ATTACKVELOCITY, babyyoda):
                 darthvader.y += ATTACKVELOCITY
                 if darthvader.x < babyyoda.x < darthvader.x + 50 and darthvader.y < babyyoda.y < darthvader.y + 50:
                     BABY_YODA_HEALTH -= 10  # if it's going up and touch baby yoda it decreases his life
-
+'''
 # -------------------------------Function for the charge in the first level-----------------------------------------#
 def attack(darthvader, ATTACKVELOCITY):
     if darthvader.timer == 120 and darthvader.charge == False:
@@ -288,7 +287,7 @@ def screenlevel1(usertext):
     score = 0
 
     babyyoda = pygame.Rect(225, 600, 50, 50) # rectangle to manipulate the spaceship
-    darthvader = darthvader1(225, 100)  # to manipulate the enemy cause it can't be rect
+    darthvader = Shuriken.Shuriken_image.get_rect()  # to manipulate the enemy cause it can't be rect
     DARTH_VADER_HEALTH = 30  # HP of the enemy
     BABY_YODA_HEALTH = 50  # HP of the player
     baby_yoda_bullets = []  # bullets
@@ -334,15 +333,27 @@ def screenlevel1(usertext):
             mainscreen()
             flag = 0
 
-        darthvadermoving(darthvader, ATTACKVELOCITY, DARTHVADERVELOCITY, babyyoda)
-        attack(darthvader, ATTACKVELOCITY) # functions to move and to charge the enemy
 
+        Shuriken.shurikenrect = Shuriken.shurikenrect.move(Shuriken.speed)
 
         if timer == 60: # timer
             timer = 0
             currenttime += 1
         else:
             timer += 1
+
+        if Shuriken.shurikenrect.left <= 0:
+            Shuriken.speed = [Shuriken.bounce_positive(Shuriken), Shuriken.bounce_random(Shuriken)]
+
+        if Shuriken.shurikenrect.right >= 750:
+            Shuriken.speed = [Shuriken.bounce_negative(Shuriken),Shuriken.bounce_random(Shuriken)]
+
+        if Shuriken.shurikenrect.top <= 0:
+            Shuriken.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_positive(Shuriken)]
+
+        if Shuriken.shurikenrect.bottom >= 700:
+            Shuriken.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
+
         keysmovement = pygame.key.get_pressed()
         baby_yoda_movement(keysmovement, babyyoda)
         drawscreen(babyyoda, darthvader, baby_yoda_bullets, BABY_YODA_HEALTH, DARTH_VADER_HEALTH, usertext, currenttime, 1)
@@ -360,7 +371,7 @@ def screenlevel2(usertext, score2 = 0):
     global score
     score = 0
     babyyoda = pygame.Rect(225, 600, 50, 50) # rectangle to manipulate the spaceship
-    darthvader = darthvader1(225, 100)  # to manipulate the enemy cause it can't be rect
+    darthvader = Shuriken(225, 100)  # to manipulate the enemy cause it can't be rect
     DARTH_VADER_HEALTH = 50  # HP of the enemy
     BABY_YODA_HEALTH = 50  # HP of the player
     baby_yoda_bullets = []  # bullets
@@ -426,7 +437,7 @@ def screenlevel3(usertext, score3):
     score = 0
 
     babyyoda = pygame.Rect(225, 600, 50, 50) # rectangle to manipulate the spaceship
-    darthvader = darthvader1(225, 100)  # to manipulate the enemy cause it can't be rect
+    darthvader = Shuriken(225, 100)  # to manipulate the enemy cause it can't be rect
     DARTH_VADER_HEALTH = 40  # HP of the enemy
     BABY_YODA_HEALTH = 50  # HP of the player
     baby_yoda_bullets = []  # bullets
@@ -473,8 +484,8 @@ def screenlevel3(usertext, score3):
                 mainscreen()
                 flag = 0
 
-        darthvadermoving(darthvader, ATTACKVELOCITY, DARTHVADERVELOCITY, babyyoda)  # function so Darth Vdaer moves
-        attack(darthvader, ATTACKVELOCITY)  # function to charge in direction to baby yoda
+        #darthvadermoving(darthvader, ATTACKVELOCITY, DARTHVADERVELOCITY, babyyoda)  # function so Darth Vdaer moves
+        #attack(darthvader, ATTACKVELOCITY)  # function to charge in direction to baby yoda
 #        enemybullets(darth_vader_bullets, babyyoda, darthvader)
 
         if timer == 60:  # function of the timer
