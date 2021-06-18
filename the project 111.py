@@ -166,6 +166,8 @@ NINJA_HEALTH = 50
 class Ninja:
     Ninja_image = pygame.image.load("ninja .png")
     Ninja = pygame.transform.scale(Ninja_image, (50, 50))
+    Ninja_rect = Ninja_image.get_rect()
+    update_loc = Ninja_rect.update(200, 200, 270, 270)
     speed = [1,0]
 # ----------------------------------------------- Shuriken Class -------------------------------------------------#
 class Shuriken:  # class of the enemy
@@ -185,7 +187,7 @@ class Shuriken:  # class of the enemy
 
 
 def ninja_movement(keysmovement, ninja):
-    if keysmovement[pygame.K_w] and ninja.y - 5 > 0:  # going up when u press W
+    if keysmovement[pygame.K_w] and Ninja.Ninja_rect.top > 0:  # going up when u press W
         ninja.y -= 5
     if keysmovement[pygame.K_s] and ninja.y + 5 + 50 < 700:  # going down when u press D
         ninja.y += 5
@@ -209,7 +211,7 @@ def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
     PRINCIPALSCREEN1.blit(usertext, (230, 650))
     PRINCIPALSCREEN1.blit(scoretext, (20, 20))
     PRINCIPALSCREEN1.blit(currenttime1, (400, 20))  # it writes the text
-    PRINCIPALSCREEN1.blit(Ninja.Ninja_image, (ninja.x, ninja.y))
+    PRINCIPALSCREEN1.blit(Ninja.Ninja_image, (Ninja.Ninja_rect))
     PRINCIPALSCREEN1.blit(Shuriken.Shuriken_image, (Shuriken.shurikenrect))
 
     pygame.display.update()
@@ -319,7 +321,7 @@ def screenlevel1(usertext):
             Shuriken.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
 
         keysmovement = pygame.key.get_pressed()
-        ninja(keysmovement, ninja)
+        ninja_movement(keysmovement, Ninja)
         drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, 1)
         pygame.display.update()
         clock.tick(60)  # recursivity of the functions every 60 FPS
