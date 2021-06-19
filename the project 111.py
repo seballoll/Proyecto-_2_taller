@@ -37,9 +37,11 @@ textofleaderboard = fontofsubtitle.render("Leaderboard", 0, (0, 0, 0))
 class backgroun_image:
     def __init__(self,level):
         self.level = level
-        self.bg1 = pygame.image.load("bamboo forest.jpg")
-        self.bg2 = pygame.image.load("sakura forest.jpg")
-        self.bg3 = pygame.image.load("torii.jpg")
+        self.bg1 = pygame.image.load("background images/bamboo forest.jpg")
+        self.bg2 = pygame.image.load("background images/sakura forest.jpg")
+        self.bg3 = pygame.image.load("background images/torii.jpg")
+        self.intructions = pygame.image.load("background images/Japanese-garden.jpg")
+        self.leaderboards = pygame.image.load("background images/void.jpg")
     def choose_level(self):
         if self.level == 1:
             return self.bg1
@@ -62,7 +64,7 @@ def mainscreen():
     clickbutton = False
     active = False
     usertext = ''
-    bg1 = pygame.image.load("dojo.jpg")
+    bg1 = pygame.image.load("background images/dojo.jpg")
     while True:
         PRINCIPALSCREEN1.fill((0, 0, 0)) # to fill the screen
 
@@ -454,6 +456,9 @@ def screeninstructions():
                     running = False
                     pygame.display.set_caption('Operation Moon light')
 
+        bgi = pygame.image.load("background images/Japanese-garden.jpg")
+        PRINCIPALSCREEN1.blit(bgi,(0,0))
+
 # It writes the text on a posicion x,y
         PRINCIPALSCREEN1.blit(textoftitle2, (250, 50))
         PRINCIPALSCREEN1.blit(textofspam, (130, 100))
@@ -534,9 +539,72 @@ def screenleaderboard(usertext, score):
             if event.type == KEYDOWN:  # this function takes you to the last screen when u hit space
                 if event.key == K_ESCAPE:
                     running = False
-                    pygame.display.set_caption('Operation Moon light')
+                    pygame.display.set_caption('Ninja dash')
 
+        bgi = pygame.image.load("background images/void.jpg")
+        PRINCIPALSCREEN1.blit(bgi, (0, 0))
         pygame.display.update()  # updates every 60 FPS
         clock.tick(60)
+
+
+def save_score(info):
+    with open("score", "a") as f:
+        f.write(info+"\n")
+
+def show_score():
+    with open("score.txt", "r") as f:
+        scores = f.read()
+        i = 0
+        start = 0
+        end = 0
+        list_scores = []
+        for x in scores:
+            if x == "[":
+                start = i
+                i += 1
+            elif x == "]":
+                end = i
+                list_scores += [scores[start:end+1]]
+                i += 1
+            else:
+                i += 1
+        return make_number(list_scores)
+def make_number(list):
+    index = 0
+    number_list = []
+    dictionary = { }
+    while index != len(list):
+        number_start = 0
+        for x in list[index]:
+            if x == "/":
+                number_list += [int(list[index][number_start+1:-1])]
+                dictionary.update({int(list[index][number_start+1:-1]):index})
+                break
+            else:
+                number_start += 1
+        index += 1
+    return give_order(quicksort(number_list),dictionary,list)
+def quicksort(lista):
+    if len(lista) <= 1:
+        return lista
+    else:
+        pivot = lista[-1]
+        lista = lista[:-1]
+    menor = []
+    mayor = []
+    for x in lista:
+        if x > pivot:
+            mayor += [x]
+        else:
+            menor += [x]
+    return quicksort(mayor) + [pivot] + quicksort(menor)
+
+def give_order(lista,dictionary,list):
+    final_format = []
+    for x in lista:
+        if x in dictionary:
+            final_format += [list[dictionary[x]]]
+    return final_format
+
 
 mainscreen()
