@@ -138,7 +138,7 @@ def mainscreen():
 
         fontofname = pygame.font.Font(None, 25)
         inputrectangle = pygame.Rect(50, 125, 200, 25)
-        color1 = pygame.Color(255, 255, 255)  # color for the rectangle where u write your name
+        color1 = pygame.Color(0,  0, 0)  # color for the rectangle where u write your name
         active = True
 
         pygame.draw.rect(PRINCIPALSCREEN1, color1, inputrectangle)
@@ -164,11 +164,10 @@ NINJAGOTHIT = pygame.USEREVENT  # event when the ninja get damage
 NINJA_HEALTH = 50
 # ----------------------------------------------- Ninja Class    -------------------------------------------------#
 class Ninja:
-    Ninja_image = pygame.image.load("ninja .png")
-    Ninja = pygame.transform.scale(Ninja_image, (50, 50))
-    Ninja_rect = Ninja_image.get_rect()
-    update_loc = Ninja_rect.update(200, 200, 270, 270)
-    speed = [1,0]
+
+        Ninja_image = pygame.image.load("ninja .png")
+        Ninja = pygame.transform.scale(Ninja_image, (50, 50))
+        speed = [1,0]
 # ----------------------------------------------- Shuriken Class -------------------------------------------------#
 class Shuriken:  # class of the enemy
     Shuriken_image = pygame.image.load("shuriken.png")
@@ -187,7 +186,7 @@ class Shuriken:  # class of the enemy
 
 
 def ninja_movement(keysmovement, ninja):
-    if keysmovement[pygame.K_w] and Ninja.Ninja_rect.top > 0:  # going up when u press W
+    if keysmovement[pygame.K_w] and ninja.y - 5 > 0:  # going up when u press W
         ninja.y -= 5
     if keysmovement[pygame.K_s] and ninja.y + 5 + 50 < 700:  # going down when u press D
         ninja.y += 5
@@ -211,7 +210,7 @@ def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
     PRINCIPALSCREEN1.blit(usertext, (230, 650))
     PRINCIPALSCREEN1.blit(scoretext, (20, 20))
     PRINCIPALSCREEN1.blit(currenttime1, (400, 20))  # it writes the text
-    PRINCIPALSCREEN1.blit(Ninja.Ninja_image, (Ninja.Ninja_rect))
+    PRINCIPALSCREEN1.blit(Ninja.Ninja_image, (ninja.x, ninja.y))
     PRINCIPALSCREEN1.blit(Shuriken.Shuriken_image, (Shuriken.shurikenrect))
 
     pygame.display.update()
@@ -272,9 +271,9 @@ def screenlevel1(usertext):
     # calls global values
     global score, NINJA_HEALTH, Ninja_image
     score = 0
-    Ninja_image = pygame.image.load("ninja .png")
-    ninja = pygame.transform.scale(Ninja_image, (50, 50))
-#   ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
+#    Ninja_image = pygame.image.load("ninja .png")
+#    ninja = pygame.transform.scale(Ninja_image, (50, 50))
+    ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
     shuriken = Shuriken.Shuriken_image.get_rect()  # to manipulate the enemy cause it can't be rect
     NINJA_HEALTH = 50  # HP of the player
     pygame.display.set_caption('Level 1') # title
@@ -321,7 +320,7 @@ def screenlevel1(usertext):
             Shuriken.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
 
         keysmovement = pygame.key.get_pressed()
-        ninja_movement(keysmovement, Ninja)
+        ninja_movement(keysmovement, ninja)
         drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, 1)
         pygame.display.update()
         clock.tick(60)  # recursivity of the functions every 60 FPS
@@ -337,7 +336,7 @@ def screenlevel2(usertext, score2 = 0):
     global score, NINJA_HEALTH
     score = 0
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the spaceship
-    darthvader = Shuriken(225, 100)  # to manipulate the enemy cause it can't be rect
+    shuriken = Shuriken.Shuriken_image.get_rect()  # to manipulate the enemy cause it can't be rect
     NINJA_HEALTH = 50  # HP of the player
     pygame.display.set_caption('Level 2') # title
     currenttime = 0
@@ -385,7 +384,7 @@ def screenlevel3(usertext, score3):
     score = 0
 
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
-    shuriken = Shuriken(225, 100)  # to manipulate the enemy cause it can't be rect
+    shuriken = Shuriken.Shuriken_image.get_rect()  # to manipulate the enemy cause it can't be rect
     NINJA_HEALTH = 50  # HP of the player
     darth_vader_bullets = []
     pygame.display.set_caption('Level 3') # title
