@@ -172,20 +172,56 @@ class Ninja:
         speed = [1,0]
 # ----------------------------------------------- Shuriken Class -------------------------------------------------#
 class Shuriken:  # class of the enemy
-    Shuriken_image = pygame.image.load("shuriken.png")
-    shurikenrect = Shuriken_image.get_rect()
-    shurikenrect.update(5, 5, 55, 31)
-    speed = [1, 0]
+
+    def __init__(self,image):
+        self.Shuriken_image = image
+        self.shurickenrect = self.Shuriken_image.get_rect()
+        self.speed = [8, 8]
     def bounce_positive(self):
-        return random.randint(0, 1)
-
+        return random.randint(0, 8)
     def bounce_negative(self):
-        return random.randint(-1, 0)
-
+        return random.randint(-8, 0)
     def bounce_random(self):
-        return random.randint(-1, 1)
-# -----------------------------------Function for the movement of baby yoda---------------------------------------#
+        return random.randint(-8, 8)
+    def get_image(self):
+        image = self.Shuriken_image
+        return image
+    def get_recta(self):
+        rect = self.shurickenrect
+        return rect
+    def get_speed(self):
+        speed = self.speed
+        return speed
+    def set_move(self):
+        self.shurickenrect = self.shurickenrect.move(self.speed)
 
+
+
+
+
+amount_shuriken = []
+
+def create_shurikens(level):
+    global amount_shuriken
+    if level == 1:
+        for x in range(0,5):
+            x = Shuriken(pygame.image.load("shuriken.png"))
+            print(x)
+            amount_shuriken += [x]
+
+    elif level == 2:
+        for x in range(0,7):
+            x = Shuriken(pygame.image.load("shuriken.png"))
+            amount_shuriken += [x]
+    else:
+        for x in range(0,10):
+            x = Shuriken(pygame.image.load("shuriken.png"))
+            amount_shuriken += [x]
+
+
+
+# -----------------------------------Function for the movement of baby yoda---------------------------------------#
+clinck = pygame.mixer.music.load("sounds/metallic-clink.wav")
 
 def ninja_movement(keysmovement, ninja):
     if keysmovement[pygame.K_w] and ninja.y - 5 > 0:  # going up when u press W
@@ -198,7 +234,7 @@ def ninja_movement(keysmovement, ninja):
         ninja.x += 5
 
 # ---------------------------------Function to draw all the variables of the levels-------------------------------#
-
+do_shuriken = True
 
 def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
     background_image = backgroun_image(level)
@@ -213,10 +249,23 @@ def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
     PRINCIPALSCREEN1.blit(scoretext, (20, 20))
     PRINCIPALSCREEN1.blit(currenttime1, (400, 20))  # it writes the text
     PRINCIPALSCREEN1.blit(Ninja.Ninja_image, (ninja.x, ninja.y))
-    PRINCIPALSCREEN1.blit(Shuriken.Shuriken_image, (Shuriken.shurikenrect))
+    #PRINCIPALSCREEN1.blit(Shuriken.Shuriken_image, (Shuriken.shurikenrect))
+    global do_shuriken, amount_shuriken
+    while  do_shuriken:
+        create_shurikens(level)
+        do_shuriken = False
+
+
+    for x in amount_shuriken:
+        x.set_move()
+
+
+    for x in amount_shuriken:
+        PRINCIPALSCREEN1.blit(x.get_image(),(x.get_recta()))
+
+
 
     pygame.display.update()
-
 
 # --------------Function for the movement of Darth Vader in the first and third level--------------------#
 '''def darthvadermoving(darthvader, DARTHVADERVELOCITY, ATTACKVELOCITY, babyyoda):
@@ -276,7 +325,10 @@ def screenlevel1(usertext):
 #    Ninja_image = pygame.image.load("ninja .png")
 #    ninja = pygame.transform.scale(Ninja_image, (50, 50))
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
-    shuriken = Shuriken.Shuriken_image.get_rect()  # to manipulate the enemy cause it can't be rect
+
+
+
+    # to manipulate the enemy cause it can't be rect
     NINJA_HEALTH = 50  # HP of the player
     pygame.display.set_caption('Level 1') # title
     currenttime = 0
@@ -301,7 +353,23 @@ def screenlevel1(usertext):
             mainscreen()
             flag = 0
 
-        Shuriken.shurikenrect = Shuriken.shurikenrect.move(Shuriken.speed)
+
+        for x in amount_shuriken:
+
+            if x.get_recta().left <= 0:
+                x.speed = [Shuriken.bounce_positive(Shuriken), Shuriken.bounce_random(Shuriken)]
+                pygame.mixer.music.play(0)
+            if x.get_recta().right >= 750:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_negative(Shuriken), Shuriken.bounce_random(Shuriken)]
+
+            if x.get_recta().top <= 0:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_positive(Shuriken)]
+
+            if x.get_recta().bottom >= 700:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
 
         if timer == 60: # timer
             timer = 0
@@ -309,21 +377,11 @@ def screenlevel1(usertext):
         else:
             timer += 1
 
-        if Shuriken.shurikenrect.left <= 0:
-            Shuriken.speed = [Shuriken.bounce_positive(Shuriken), Shuriken.bounce_random(Shuriken)]
-
-        if Shuriken.shurikenrect.right >= 750:
-            Shuriken.speed = [Shuriken.bounce_negative(Shuriken),Shuriken.bounce_random(Shuriken)]
-
-        if Shuriken.shurikenrect.top <= 0:
-            Shuriken.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_positive(Shuriken)]
-
-        if Shuriken.shurikenrect.bottom >= 700:
-            Shuriken.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
 
         keysmovement = pygame.key.get_pressed()
         ninja_movement(keysmovement, ninja)
         drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, 1)
+
         pygame.display.update()
         clock.tick(60)  # recursivity of the functions every 60 FPS
 
@@ -335,10 +393,11 @@ score = 0
 
 def screenlevel2(usertext, score2 = 0):
 
-    global score, NINJA_HEALTH
+    global score, NINJA_HEALTH, do_shuriken
+    do_shuriken = True
     score = 0
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the spaceship
-    shuriken = Shuriken.Shuriken_image.get_rect()  # to manipulate the enemy cause it can't be rect
+
     NINJA_HEALTH = 50  # HP of the player
     pygame.display.set_caption('Level 2') # title
     currenttime = 0
@@ -362,6 +421,22 @@ def screenlevel2(usertext, score2 = 0):
             if NINJA_HEALTH <= 0:  # if you die it goes back to the primcipal screen
                 mainscreen()
                 flag = 0
+        for x in amount_shuriken:
+
+            if x.get_recta().left <= 0:
+                x.speed = [Shuriken.bounce_positive(Shuriken), Shuriken.bounce_random(Shuriken)]
+                pygame.mixer.music.play(0)
+            if x.get_recta().right >= 750:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_negative(Shuriken), Shuriken.bounce_random(Shuriken)]
+
+            if x.get_recta().top <= 0:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_positive(Shuriken)]
+
+            if x.get_recta().bottom >= 700:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
 
         if timer == 60:  # function of the timer
             timer = 0
@@ -386,7 +461,7 @@ def screenlevel3(usertext, score3):
     score = 0
 
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
-    shuriken = Shuriken.Shuriken_image.get_rect()  # to manipulate the enemy cause it can't be rect
+  # to manipulate the enemy cause it can't be rect
     NINJA_HEALTH = 50  # HP of the player
     darth_vader_bullets = []
     pygame.display.set_caption('Level 3') # title
@@ -412,6 +487,23 @@ def screenlevel3(usertext, score3):
             if NINJA_HEALTH <= 0:  # if you die it goes back to the principal screen
                 mainscreen()
                 flag = 0
+
+        for x in amount_shuriken:
+
+            if x.get_recta().left <= 0:
+                x.speed = [Shuriken.bounce_positive(Shuriken), Shuriken.bounce_random(Shuriken)]
+                pygame.mixer.music.play(0)
+            if x.get_recta().right >= 750:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_negative(Shuriken), Shuriken.bounce_random(Shuriken)]
+
+            if x.get_recta().top <= 0:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_positive(Shuriken)]
+
+            if x.get_recta().bottom >= 700:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
 
         if timer == 60:  # function of the timer
             timer = 0
