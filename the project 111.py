@@ -2,27 +2,27 @@
 import pygame, sys
 import random  # so we can manipulate the random number that the enemy throws
 from pygame.locals import *
-import vlc
+import vlc  # lib to use sounds in the game
 
-# Principal Window Setup
+# ------------------------------------------- General settings ---------------------------------------#
 pygame.init()
 clock = pygame.time.Clock()  # function for the timer
 timer = 0  # inital value
 PRINCIPALSCREEN1 = pygame.display.set_mode([700, 700])  # to pop up the screen
 pygame.display.set_caption('Ninja Dash')  # title
-icon1 = pygame.image.load("ninja .png") # icon
-pygame.display.set_icon(icon1)
+icon1 = pygame.image.load("ninja .png")  # icon
+pygame.display.set_icon(icon1)  # to display the icon of  the ninja
 
 
 # -------------------------------------------Text for the principal window---------------------------------------#
-
 # Fonts of the text
 fontoftitle = pygame.font.Font(None, 40)
 fontofsubtitle = pygame.font.Font(None, 30)
 fontofhp = pygame.font.Font(None, 30)
 
 # Texts
-textoftitle = fontoftitle.render("手裏剣物語", 0, (255, 255, 255))
+textoftitle = fontoftitle.render("立竜の物語", 0, (255, 255, 255))
+# the title says "Ritsuryu no monogatari" which means "La historia del dragón ascendente"
 textofsubtitle = fontofsubtitle.render("Entry your name", 0, (255, 255, 255))
 textofindication = fontofsubtitle.render("(Write a short name)", 0, (255, 255, 255))
 textoflvl1 = fontofsubtitle.render("Level1", 0, (0, 0, 0))
@@ -32,28 +32,34 @@ textofinstructions = fontofsubtitle.render("Instructions", 0, (0, 0, 0))
 textofaboutinfo = fontofsubtitle.render("About", 0, (0, 0, 0))
 textofleaderboard = fontofsubtitle.render("Leaderboard", 0, (0, 0, 0))
 
-# ------------------------------------------ Background images class -----------------------------------------------#
+
+# ------------------------------------- Class for the background's photos ------------------------------------------#
 
 
-class backgroun_image:
+class backgroun_image:  # we define the function
     def __init__(self,level):
         self.level = level
         self.bg1 = pygame.image.load("background images/bamboo forest.jpg")
-        self.bg2 = pygame.image.load("background images/sakura forest.jpg")
-        self.bg3 = pygame.image.load("background images/torii.jpg")
-        self.intructions = pygame.image.load("background images/Japanese-garden.jpg")
-        self.leaderboards = pygame.image.load("background images/void.jpg")
-    def choose_level(self):
+        # and put the photos in each screen in this case level 1
+        self.bg2 = pygame.image.load("background images/sakura forest.jpg")  # for the level 2
+        self.bg3 = pygame.image.load("background images/torii.jpg")  # for the level 3
+        self.about = pygame.image.load("background images/torii.jpg")  # for the about's screen
+        self.intructions = pygame.image.load("background images/Japanese-garden.jpg")   # for the instructions's screen
+        self.leaderboards = pygame.image.load("background images/void.jpg")  # for the leaderboard's screen
+    def choose_level(self):  # we define a function to give a background photo for each level
         if self.level == 1:
             return self.bg1
-        elif self.level ==2:
+        elif self.level == 2:
             return  self.bg2
         elif self.level == 3:
             return self.bg3
+
+
 # ------------------------------------------ sound -----------------------------------------------#
 
-clinck = pygame.mixer.music.load("sounds/metallic-clink.wav")
-music4 = vlc.MediaPlayer("sounds/Using What You Got.mp3")
+clinck = pygame.mixer.music.load("sounds/metallic-clink.wav")  # sound for the shurikens
+music4 = vlc.MediaPlayer("sounds/Using What You Got.mp3")  # mainscreen's music
+
 
 # ------------------------------------------ Function of the principal screen -----------------------------------------#
 
@@ -64,17 +70,19 @@ active = False
 # GLOBAL SCORE
 score = 0
 
-def play_bgm():
+
+def play_bgm():  # function to play the music of the mainscreen
     music4.play()
     music4.audio_set_volume(50)
 
+
 def mainscreen():
     # initial values
-    clickbutton = False
-    play_bgm()
-    active = False
-    usertext = ''
-    bg1 = pygame.image.load("background images/dojo.jpg")
+    clickbutton = False  # variable to select the other screens
+    play_bgm()  # for the music
+    active = False  # variable to validate when u click
+    usertext = ''   # variable to save the name
+    bg1 = pygame.image.load("background images/dojo.jpg")  # mainscreen's background photo
 
     while True:
         PRINCIPALSCREEN1.fill((0, 0, 0)) # to fill the screen
@@ -92,7 +100,7 @@ def mainscreen():
 
         if level1.collidepoint((mx, my)):
             if clickbutton:
-                music4.stop()
+                music4.stop()  # to stop the mainscreen's music i u go to other screen in each screen
                 screenlevel1(usertext,score)
         if level2.collidepoint((mx, my)):
             if clickbutton:
@@ -176,80 +184,91 @@ def mainscreen():
         pygame.display.update()
         clock.tick(60)
 
-# -------------------GAME CONFIG-------------------------
 
+# --------------------------------------------------- GAME CONFIG---------------------------------------------------#
 
+# Variables to manipulate in the levels
 NINJAGOTHIT = pygame.USEREVENT  # event when the ninja get damage
-NINJA_HEALTH = 3
+NINJA_HEALTH = 3  # Ninja's hp
+
+
 # ----------------------------------------------- Ninja Class    -------------------------------------------------#
+
+
 class Ninja:
 
-        Ninja_image = pygame.image.load("ninja .png")
-        Ninja = pygame.transform.scale(Ninja_image, (50, 50))
-        speed = [1,0]
+        Ninja_image = pygame.image.load("ninja .png")  # the photo of the ninja
+        Ninja = pygame.transform.scale(Ninja_image, (50, 50))  # to adjust it to the scale of the rectangle
+        speed = [1,0]  # speed of the ninja
+
+
 # ----------------------------------------------- Shuriken Class -------------------------------------------------#
-class Shuriken:  # class of the enemy
+
+
+class Shuriken:
 
     def __init__(self,image):
-        self.Shuriken_image = image
+        self.Shuriken_image = image  # photo of the shuriken
         self.shurickenrect = self.Shuriken_image.get_rect()
-        self.speed = [8, 8]
+        self.speed = [8, 8]  # speed of the shuriken
     def bounce_positive(self):
         return random.randint(0, 8)
     def bounce_negative(self):
         return random.randint(-8, 0)
-    def bounce_random(self):
+    def bounce_random(self):  # the function pics a random number so it changes the direction
         return random.randint(-8, 8)
-    def get_image(self):
+    def get_image(self):  # photo of the shuriken
         image = self.Shuriken_image
         return image
     def get_recta(self):
         rect = self.shurickenrect
         return rect
-    def get_speed(self):
+    def get_speed(self):  # function for the speed
         speed = self.speed
         return speed
     def set_move(self):
         self.shurickenrect = self.shurickenrect.move(self.speed)
 
 
+amount_shuriken = []  # variable to pick a certain amount of shurikens to show on the screen
+
+# --------------------------------------- Function to create a lot of shurikens ----------------------------#
 
 
-
-amount_shuriken = []
-
-def create_shurikens(level):
+def create_shurikens(level):  # function to pick the amount in each level
     global amount_shuriken
-    if level == 1:
-        for x in range(0,5):
-            x = Shuriken(pygame.image.load("shuriken.png"))
-            print(x)
-            amount_shuriken += [x]
-
-    elif level == 2:
-        for x in range(0,7):
-            x = Shuriken(pygame.image.load("shuriken.png"))
-            amount_shuriken += [x]
+    if level == 1:  # for level 1
+        for x in range(0, 5):  # 5 shurikens in this levels
+            x = Shuriken(pygame.image.load("shuriken.png"))  # each one with the shuriken's photo
+            amount_shuriken += [x]  # it puts every shuriken till it print all the 5 shurikens
+    elif level == 2:  # for level 1
+        for x in range(0, 7):  # 7 shurikens in this levels
+            x = Shuriken(pygame.image.load("shuriken.png"))  # each one with the shuriken's photo
+            amount_shuriken += [x]  # it puts every shuriken till it print all the 7 shurikens
     else:
-        for x in range(0,10):
-            x = Shuriken(pygame.image.load("shuriken.png"))
-            amount_shuriken += [x]
-music1 = vlc.MediaPlayer("sounds/Fighting Without Honor.mp3")
-music2 = vlc.MediaPlayer("sounds/Hiding in the Shadows.mp3")
-music3 = vlc.MediaPlayer("sounds/RoBomb.mp3")
+        for x in range(0, 10):   # for level 1 and 10 shurikens in this levels
+            x = Shuriken(pygame.image.load("shuriken.png"))  # each one with the shuriken's photo
+            amount_shuriken += [x]  # it puts every shuriken till it print all the 10 shurikens
 
-def play_music(level):
-    if level == 1:
-        music1.play()
-        music1.audio_set_volume(50)
-    elif level == 2:
-        music2.play()
-        music2.audio_set_volume(50)
-    else:
-        music3.play()
-        music3.audio_set_volume(50)
 
-# -----------------------------------Function for the movement of baby yoda---------------------------------------#
+music1 = vlc.MediaPlayer("sounds/Fighting Without Honor.mp3")  # music for the first level
+music2 = vlc.MediaPlayer("sounds/Hiding in the Shadows.mp3")  # music for the second level
+music3 = vlc.MediaPlayer("sounds/RoBomb.mp3")  # music for the third level
+
+
+def play_music(level):  # function to play the music in each level
+    if level == 1:  # in the first level
+        music1.play()  # to play the song
+        music1.audio_set_volume(50)  # to regulate the volume
+    elif level == 2:  # in the second level
+        music2.play()  # to play the song
+        music2.audio_set_volume(50)  # to regulate the volume
+    else:  # in the third level
+        music3.play()  # to play the song
+        music3.audio_set_volume(50)  # to regulate the volume
+
+
+# -----------------------------------Function for the movement of the ninja---------------------------------------#
 
 
 def ninja_movement(keysmovement, ninja):
@@ -262,12 +281,16 @@ def ninja_movement(keysmovement, ninja):
     if keysmovement[pygame.K_d] and ninja.x + 50 < 700:  # going right when u press D
         ninja.x += 5
 
+
 # ---------------------------------Function to draw all the variables of the levels-------------------------------#
-do_shuriken = True
+
+
+do_shuriken = True  # variable to create the shurikens
+
 
 def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
-    background_image = backgroun_image(level)
-    PRINCIPALSCREEN1.blit(background_image.choose_level(),(0,0))
+    background_image = backgroun_image(level)  # background photo
+    PRINCIPALSCREEN1.blit(background_image.choose_level(), (0, 0))
     ninja_health = fontofhp.render("LIFE:" + str(NINJA_HEALTH), 1, (232, 54, 0))
     usertext = fontofhp.render("NAME:" + str(usertext), 1, (232, 54, 0))
     scoretext = fontofhp.render("SCORE:" + str(score), 1, (232, 54, 0))
@@ -278,10 +301,9 @@ def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
     PRINCIPALSCREEN1.blit(scoretext, (20, 20))
     PRINCIPALSCREEN1.blit(currenttime1, (400, 20))  # it writes the text
     PRINCIPALSCREEN1.blit(Ninja.Ninja_image, (ninja.x, ninja.y))
-    #PRINCIPALSCREEN1.blit(Shuriken.Shuriken_image, (Shuriken.shurikenrect))
+
+
     global do_shuriken, amount_shuriken
-
-
     while  do_shuriken:
         create_shurikens(level)
         do_shuriken = False
@@ -300,20 +322,18 @@ def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
 
 
 # -----------------------------------------Function for the level 1 screen---------------------------------------#
-# GLOBAL SCORE
 
 
-
-def screenlevel1(usertext,score1):
+def screenlevel1(usertext,score):
     # calls global values
-    global  NINJA_HEALTH, Ninja_image, do_shuriken, score
+    global  NINJA_HEALTH, Ninja_image, do_shuriken
     do_shuriken = True
-    score = 0
+    score = 0  # score of the level
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
-    play_music(1)
+    play_music(1)  # to play the first song
     NINJA_HEALTH = 3  # HP of the player
-    pygame.display.set_caption('Level 1') # title
-    currenttime = 0
+    pygame.display.set_caption('Level 1')  # title
+    currenttime = 0  # for the timer in the screen
     timer = 0  # initial values
     running = True
     while running:
@@ -324,16 +344,16 @@ def screenlevel1(usertext,score1):
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN:  # to go to the last screen with ESCAPE
+            if event.type == KEYDOWN:  # to go to the main screen with ESCAPE
                 if event.key == K_ESCAPE:
                     amount_shuriken = []
                     music1.stop()
                     running = mainscreen()
-                    pygame.display.set_caption('ninja dash')  # puts the title
+                    pygame.display.set_caption('Ninja dash')  # puts the title
 
-        if NINJA_HEALTH <= 0: # if u die it takes you to the main screen
+        if NINJA_HEALTH <= 0:  # if u die it takes you to the main screen
             format = usertext + "/" + str(score)
-            info = "[" + format + "]"
+            info = "[" + format + "]"  # and gives you your score
             save_score(info)
             mainscreen()
             flag = 0
@@ -342,61 +362,59 @@ def screenlevel1(usertext,score1):
         for x in amount_shuriken:
             rect = x.get_recta()
 
-
-            if rect.left <= 0:
+            # it changes the speed of the  shuriken
+            if rect.left <= 0:  # if it's on the left border it changes the direction to the right
                 x.speed = [Shuriken.bounce_positive(Shuriken), Shuriken.bounce_random(Shuriken)]
-                pygame.mixer.music.play(0)
-            if rect.right >= 750:
+                pygame.mixer.music.play(0)  # if it hits the border, plays the sound
+            if rect.right >= 750:  # if it's on the right border it changes the direction to the left
                 pygame.mixer.music.play(0)
                 x.speed = [Shuriken.bounce_negative(Shuriken), Shuriken.bounce_random(Shuriken)]
 
-            if rect.top <= 0:
+            if rect.top <= 0:   # if it's on the top border it changes the direction to the bottom
                 pygame.mixer.music.play(0)
                 x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_positive(Shuriken)]
 
-            if rect.bottom >= 700:
+            if rect.bottom >= 700:   # if it's on the bottom border it changes the direction to the top
                 pygame.mixer.music.play(0)
                 x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
             if ninja.left >= rect.top >= ninja.right or ninja.left >= x.get_recta().bottom >= ninja.right:
                 print("a")
 
 
-            if timer == 60: # timer
+            if timer == 60:  # timer
                 timer = 0
                 currenttime += 1
-                score += 1
+                score += 1  # it increases the score for every second
             else:
                 timer += 1
 
-            if currenttime == 60:
+            if currenttime == 60:  # if the timer is on 60s
                 format = usertext + "/" + str(score)
                 info = "[" + format + "]"
-                save_score(info)
-                music1.stop()
-                amount_shuriken = []
-                running = screenlevel2(usertext,score)
+                save_score(info)  # it saves the score
+                music1.stop()  # stop the music
+                amount_shuriken = []  # and put the shurikens on 0
+                running = screenlevel2(usertext,score)  # and starts running the second level
 
-        
         keysmovement = pygame.key.get_pressed()
-        ninja_movement(keysmovement, ninja)
+        ninja_movement(keysmovement, ninja)  # to move the ninja
         drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, 1)
         clock.tick(60)  # recursivity of the functions every 60 FPS
         pygame.display.update()
 
 
-# ----------------------------------------Function for the level 2 function--------------------------------------------#
-# GLOBAL SCORE
+# --------------------------------------Function for the level 2 function------------------------------------------#
 
 
 def screenlevel2(usertext, score2 = 0):
 
-    global  NINJA_HEALTH, do_shuriken, amount_shuriken, score
+    global  NINJA_HEALTH, do_shuriken, amount_shuriken
     do_shuriken = True
     score = 0
-    ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the spaceship
-    play_music(2)
-    NINJA_HEALTH = 3  # HP of the player
-    pygame.display.set_caption('Level 2') # title
+    ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
+    play_music(2)  # plays the second song
+    NINJA_HEALTH = 3  # HP of the player (ninja)
+    pygame.display.set_caption('Level 2')  # title
     currenttime = 0
     timer = 0  # initial values
     running = True
@@ -408,14 +426,14 @@ def screenlevel2(usertext, score2 = 0):
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN:
-                if event.key == K_ESCAPE: # to go to the last screen
+                if event.key == K_ESCAPE:  # to go to the main screen if u press ESCAPE
                     amount_shuriken = []
-                    music2.stop()
+                    music2.stop()  # it stops the music
                     running = mainscreen()
                     pygame.display.set_caption('ninja dash')
 
 
-            if NINJA_HEALTH <= 0:  # if you die it goes back to the primcipal screen
+            if NINJA_HEALTH <= 0:  # if you die it goes back to the principal screen
                 format = usertext + "/" + str(score)
                 info = "[" + format + "]"
                 save_score(info)
@@ -441,7 +459,7 @@ def screenlevel2(usertext, score2 = 0):
             if timer == 60: # timer
                 timer = 0
                 currenttime += 1
-                score += 3
+                score += 3  # it increases the score with 3 pts every second
             else:
                 timer += 1
 
@@ -469,10 +487,9 @@ def screenlevel3(usertext, score3):
     global score, NINJA_HEALTH, do_shuriken, amount_shuriken
     score = 0
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
-  # to manipulate the enemy cause it can't be rect
     NINJA_HEALTH = 3  # HP of the player
     do_shuriken = True
-    play_music(3)
+    play_music(3)  # it plays the third song
     pygame.display.set_caption('Level 3') # title
     currenttime = 0
     timer = 0  # initial values
@@ -524,12 +541,12 @@ def screenlevel3(usertext, score3):
             else:
                 timer += 1
 
-        if currenttime == 60:
+        if currenttime == 60:  # if the timer equals to 60s
             format = usertext + "/" + str(score)
             info ="[" +format+ "]"
-            save_score(info)
-            music3.stop()
-            running = mainscreen()
+            save_score(info)  # it saves teh score
+            music3.stop()  # and stops the music
+            running = mainscreen()  # adn takes you to the mainscreen
 
 
         keysmovement = pygame.key.get_pressed()
@@ -551,6 +568,7 @@ textofalert = fontofsubtitle.render("avoid to get hit by any shuriken", 0, (255,
 textofadvice = fontofsubtitle.render("the levels will get harder so stay alert", 0, (255, 255, 255))
 textofscorentime = fontofsubtitle.render("your score and the time will show in the screen", 0, (255, 255, 255))
 textoflastline = fontofsubtitle.render("while you're playing", 0, (255, 255, 255))
+
 
 # ---------------------------------------Function for the istructions screen----------------------------------------#
 
@@ -588,6 +606,8 @@ def screeninstructions():
 
 
 # ------------------------------------------Text for the about window-----------------------------------------#
+
+
 # Fonts for the about screen's text
 fontoftitle = pygame.font.Font(None, 40)
 fontofsubtitle = pygame.font.Font(None, 30)
@@ -603,7 +623,10 @@ textofyear = fontofsubtitle.render("2021", 0, (255, 255, 255))
 textofversion = fontofsubtitle.render("pygame 2.0.1 (SDL 2.0.14, Python 3.8.5)", 0, (255, 255, 255))
 textofce = fontofsubtitle.render("Computer Engineering", 0, (255, 255, 255))
 
+
 # ----------------------------------------Function for the About Screen------------------------------------------#
+
+
 def aboutscreen():
     pygame.display.set_caption('About')  # title of the window
     running = True
@@ -670,17 +693,18 @@ def screenleaderboard(usertext, score):
         clock.tick(60)
 
 
-def save_score(info):
+def save_score(info):  # function to save the score
     with open("score.txt", "a") as f:
         f.write(info+"\n")
 
-def show_score():
+
+def show_score():  # function to show the score on the leaderboard
     with open("score.txt", "r") as f:
         scores = f.read()
         i = 0
         start = 0
-        end = 0
-        list_scores = []
+        end = 0  # initial values
+        list_scores = []  # on the beginning there's no score cause no one has ever played
         for x in scores:
             if x == "[":
                 start = i
@@ -692,6 +716,7 @@ def show_score():
             else:
                 i += 1
         return make_number(list_scores)
+
 
 def make_number(lista):
       index = 0
@@ -710,6 +735,8 @@ def make_number(lista):
                   number_start += 1
           index += 1
       return give_order(quicksort(number_list),dictionary,lista)
+
+
 def quicksort(lista):
     if len(lista) <= 1:
         return lista
@@ -725,7 +752,8 @@ def quicksort(lista):
             menor += [x]
     return quicksort(mayor) + [pivot] + quicksort(menor)
 
-def give_order(lista,dictionary,list):
+
+def give_order(lista, dictionary, list):
     final_format = []
     for x in lista:
         if x in dictionary:
