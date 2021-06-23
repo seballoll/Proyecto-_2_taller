@@ -304,9 +304,9 @@ def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
 
 
 
-def screenlevel1(usertext,score):
+def screenlevel1(usertext,score1):
     # calls global values
-    global  NINJA_HEALTH, Ninja_image, do_shuriken
+    global  NINJA_HEALTH, Ninja_image, do_shuriken, score
     do_shuriken = True
     score = 0
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
@@ -390,7 +390,7 @@ def screenlevel1(usertext,score):
 
 def screenlevel2(usertext, score2 = 0):
 
-    global  NINJA_HEALTH, do_shuriken, amount_shuriken
+    global  NINJA_HEALTH, do_shuriken, amount_shuriken, score
     do_shuriken = True
     score = 0
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the spaceship
