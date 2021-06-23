@@ -50,6 +50,10 @@ class backgroun_image:
             return  self.bg2
         elif self.level == 3:
             return self.bg3
+# ------------------------------------------ sound -----------------------------------------------#
+
+clinck = pygame.mixer.music.load("sounds/metallic-clink.wav")
+music4 = vlc.MediaPlayer("sounds/Using What You Got.mp3")
 
 # ------------------------------------------ Function of the principal screen -----------------------------------------#
 
@@ -60,12 +64,18 @@ active = False
 # GLOBAL SCORE
 score = 0
 
+def play_bgm():
+    music4.play()
+    music4.audio_set_volume(50)
+
 def mainscreen():
     # initial values
     clickbutton = False
+    play_bgm()
     active = False
     usertext = ''
     bg1 = pygame.image.load("background images/dojo.jpg")
+
     while True:
         PRINCIPALSCREEN1.fill((0, 0, 0)) # to fill the screen
 
@@ -82,21 +92,27 @@ def mainscreen():
 
         if level1.collidepoint((mx, my)):
             if clickbutton:
-                screenlevel1(usertext)
+                music4.stop()
+                screenlevel1(usertext,score)
         if level2.collidepoint((mx, my)):
             if clickbutton:
-                screenlevel2(usertext)
+                music4.stop()
+                screenlevel2(usertext,score)
         if level3.collidepoint((mx, my)):
             if clickbutton:
+                music4.stop()
                 screenlevel3(usertext, score)
         if instructions.collidepoint((mx, my)):
             if clickbutton:
+                music4.stop()
                 screeninstructions()
         if about.collidepoint((mx, my)):
             if clickbutton:
+                music4.stop()
                 aboutscreen()
         if leaderboard.collidepoint((mx, my)):
             if clickbutton:
+                music4.stop()
                 screenleaderboard(usertext, score)
         # when u click the rectangle that we created before it takes u to a different screen
 
@@ -218,11 +234,23 @@ def create_shurikens(level):
         for x in range(0,10):
             x = Shuriken(pygame.image.load("shuriken.png"))
             amount_shuriken += [x]
+music1 = vlc.MediaPlayer("sounds/Fighting Without Honor.mp3")
+music2 = vlc.MediaPlayer("sounds/Hiding in the Shadows.mp3")
+music3 = vlc.MediaPlayer("sounds/RoBomb.mp3")
 
-
+def play_music(level):
+    if level == 1:
+        music1.play()
+        music1.audio_set_volume(50)
+    elif level == 2:
+        music2.play()
+        music2.audio_set_volume(50)
+    else:
+        music3.play()
+        music3.audio_set_volume(50)
 
 # -----------------------------------Function for the movement of baby yoda---------------------------------------#
-clinck = pygame.mixer.music.load("sounds/metallic-clink.wav")
+
 
 def ninja_movement(keysmovement, ninja):
     if keysmovement[pygame.K_w] and ninja.y - 5 > 0:  # going up when u press W
@@ -231,7 +259,7 @@ def ninja_movement(keysmovement, ninja):
         ninja.y += 5
     if keysmovement[pygame.K_a] and ninja.x - 5 > 0:  # going left when u press A
         ninja.x -= 5
-    if keysmovement[pygame.K_d] and ninja.x + 50 < 500:  # going right when u press D
+    if keysmovement[pygame.K_d] and ninja.x + 50 < 700:  # going right when u press D
         ninja.x += 5
 
 # ---------------------------------Function to draw all the variables of the levels-------------------------------#
@@ -252,6 +280,8 @@ def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
     PRINCIPALSCREEN1.blit(Ninja.Ninja_image, (ninja.x, ninja.y))
     #PRINCIPALSCREEN1.blit(Shuriken.Shuriken_image, (Shuriken.shurikenrect))
     global do_shuriken, amount_shuriken
+
+
     while  do_shuriken:
         create_shurikens(level)
         do_shuriken = False
@@ -268,70 +298,105 @@ def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
 
     pygame.display.update()
 
-# --------------Function for the movement of Darth Vader in the first and third level--------------------#
-'''def darthvadermoving(darthvader, DARTHVADERVELOCITY, ATTACKVELOCITY, babyyoda):
-    if darthvader.attack == False:  # it moves to the right and to the left constantly
-        if darthvader.x - DARTHVADERVELOCITY <= 0 and darthvader.left == True:
-            darthvader.left = False  # if it's too close to the left border it starts to move right
-        if darthvader.x + DARTHVADERVELOCITY + 50 >= 500 and darthvader.left == False:
-            darthvader.left = True  # if it's too close to the right border it starts to move left
-        elif darthvader.left:
-            darthvader.x -= DARTHVADERVELOCITY
-        elif darthvader.left == False:
-            darthvader.x += DARTHVADERVELOCITY
-    else:
-        if darthvader.readycharge == True:
-            if darthvader.y - ATTACKVELOCITY <= 50 and darthvader.invading == False:
-                darthvader.invading = True  # if it's at the first part it start charging
-                darthvader.attack = False
-                darthvader.charge = False
-                darthvader.readycharge = False
-                darthvader.timer = 0
-            if darthvader.y + ATTACKVELOCITY + 50 >= 700 and darthvader.invading == True:
-                darthvader.invading = False  # if it's too close to the border it goes backwards
-                global DARTH_VADER_HEALTH
-                DARTH_VADER_HEALTH -= 1 # and when that happens it decreases darth vader's life
-            elif darthvader.invading == False:
-                darthvader.y -= ATTACKVELOCITY
-                if darthvader.x < babyyoda.x < darthvader.x + 50 and darthvader.y < babyyoda.y < darthvader.y + 50:
-                    global BABY_YODA_HEALTH
-                    BABY_YODA_HEALTH -= 10  # if it's going down and touch baby yoda it decreases his life
-            elif darthvader.invading == True:
-                darthvader.y += ATTACKVELOCITY
-                if darthvader.x < babyyoda.x < darthvader.x + 50 and darthvader.y < babyyoda.y < darthvader.y + 50:
-                    BABY_YODA_HEALTH -= 10  # if it's going up and touch baby yoda it decreases his life
-
-# -------------------------------Function for the charge in the first level-----------------------------------------#
-def attack(darthvader, ATTACKVELOCITY):
-    if darthvader.timer == 120 and darthvader.charge == False:
-        darthvader.timer = 0  # recursivity
-        if random.randint(1, 10) % 3 == 0:  #picks a random number and it determinate if it's divisble by 3
-            darthvader.charge = True # charges if it's divisible
-            darthvader.attack = True
-    elif darthvader.timer == 30 and darthvader.charge == True:
-        darthvader.readycharge = True  # if both are true it cahrges
-    else:
-        darthvader.timer += 1
-'''
 
 # -----------------------------------------Function for the level 1 screen---------------------------------------#
 # GLOBAL SCORE
-score = 0
 
 
-def screenlevel1(usertext):
+
+def screenlevel1(usertext,score):
     # calls global values
-    global score, NINJA_HEALTH, Ninja_image
+    global  NINJA_HEALTH, Ninja_image, do_shuriken
+    do_shuriken = True
     score = 0
-#    Ninja_image = pygame.image.load("ninja .png")
-#    ninja = pygame.transform.scale(Ninja_image, (50, 50))
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
-
-
-
-    # to manipulate the enemy cause it can't be rect
-    NINJA_HEALTH = 50  # HP of the player
+    play_music(1)
+    NINJA_HEALTH = 3  # HP of the player
     pygame.display.set_caption('Level 1') # title
+    currenttime = 0
+    timer = 0  # initial values
+    running = True
+    while running:
+        PRINCIPALSCREEN1.fill((0, 0, 0))
+
+        for event in pygame.event.get():
+            global amount_shuriken
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:  # to go to the last screen with ESCAPE
+                if event.key == K_ESCAPE:
+                    amount_shuriken = []
+                    music1.stop()
+                    running = mainscreen()
+                    pygame.display.set_caption('ninja dash')  # puts the title
+
+        if NINJA_HEALTH <= 0: # if u die it takes you to the main screen
+            format = usertext + "/" + str(score)
+            info = "[" + format + "]"
+            save_score(info)
+            mainscreen()
+            flag = 0
+
+
+        for x in amount_shuriken:
+            rect = x.get_recta()
+
+
+            if rect.left <= 0:
+                x.speed = [Shuriken.bounce_positive(Shuriken), Shuriken.bounce_random(Shuriken)]
+                pygame.mixer.music.play(0)
+            if rect.right >= 750:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_negative(Shuriken), Shuriken.bounce_random(Shuriken)]
+
+            if rect.top <= 0:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_positive(Shuriken)]
+
+            if rect.bottom >= 700:
+                pygame.mixer.music.play(0)
+                x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
+            if ninja.left >= rect.top >= ninja.right or ninja.left >= x.get_recta().bottom >= ninja.right:
+                print("a")
+
+
+            if timer == 60: # timer
+                timer = 0
+                currenttime += 1
+                score += 1
+            else:
+                timer += 1
+
+            if currenttime == 60:
+                format = usertext + "/" + str(score)
+                info = "[" + format + "]"
+                save_score(info)
+                music1.stop()
+                amount_shuriken = []
+                running = screenlevel2(usertext,score)
+
+        
+        keysmovement = pygame.key.get_pressed()
+        ninja_movement(keysmovement, ninja)
+        drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, 1)
+        clock.tick(60)  # recursivity of the functions every 60 FPS
+        pygame.display.update()
+
+
+# ----------------------------------------Function for the level 2 function--------------------------------------------#
+# GLOBAL SCORE
+
+
+def screenlevel2(usertext, score2 = 0):
+
+    global  NINJA_HEALTH, do_shuriken, amount_shuriken
+    do_shuriken = True
+    score = 0
+    ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the spaceship
+    play_music(2)
+    NINJA_HEALTH = 3  # HP of the player
+    pygame.display.set_caption('Level 2') # title
     currenttime = 0
     timer = 0  # initial values
     running = True
@@ -342,19 +407,20 @@ def screenlevel1(usertext):
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN:  # to go to the last screen with ESCAPE
-                if event.key == K_ESCAPE:
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE: # to go to the last screen
+                    amount_shuriken = []
+                    music2.stop()
                     running = mainscreen()
-                    pygame.display.set_caption('Operation Moon light')  # puts the title
-
-            if event.type == NINJAGOTHIT: # if the ninja gets damage it decreases it's life life
-                NINJA_HEALTH -=1
-
-        if NINJA_HEALTH <= 0: # if u die it takes you to the main screen
-            mainscreen()
-            flag = 0
+                    pygame.display.set_caption('ninja dash')
 
 
+            if NINJA_HEALTH <= 0:  # if you die it goes back to the primcipal screen
+                format = usertext + "/" + str(score)
+                info = "[" + format + "]"
+                save_score(info)
+                mainscreen()
+                flag = 0
         for x in amount_shuriken:
 
             if x.get_recta().left <= 0:
@@ -375,79 +441,18 @@ def screenlevel1(usertext):
             if timer == 60: # timer
                 timer = 0
                 currenttime += 1
-                score += 1
+                score += 3
             else:
                 timer += 1
 
-            if currenttime == 10:
-                pygame.quit()  
-                screenlevel2(usertext)
+            if currenttime == 60:
+                format = usertext + "/" + str(score)
+                info = "[" + format + "]"
+                save_score(info)
+                music2.stop()
+                amount_shuriken = []
+                running = screenlevel3(usertext,score)
 
-        
-        keysmovement = pygame.key.get_pressed()
-        ninja_movement(keysmovement, ninja)
-        drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, 1)
-        clock.tick(60)  # recursivity of the functions every 60 FPS
-        pygame.display.update()
-
-
-# ----------------------------------------Function for the level 2 function--------------------------------------------#
-# GLOBAL SCORE
-score = 0
-
-
-def screenlevel2(usertext, score2 = 0):
-
-    global score, NINJA_HEALTH, do_shuriken
-    do_shuriken = True
-    score = 0
-    ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the spaceship
-
-    NINJA_HEALTH = 50  # HP of the player
-    pygame.display.set_caption('Level 2') # title
-    currenttime = 0
-    timer = 0  # initial values
-    running = True
-    while running:
-        PRINCIPALSCREEN1.fill((0, 0, 0))
-
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE: # to go to the last screen
-                    running = mainscreen()
-                    pygame.display.set_caption('Operation Moon light')
-
-            if event.type == NINJAGOTHIT:  # when the ninja gets hit it decreases the ninja's life
-                NINJA_HEALTH -=1
-
-            if NINJA_HEALTH <= 0:  # if you die it goes back to the primcipal screen
-                mainscreen()
-                flag = 0
-        for x in amount_shuriken:
-
-            if x.get_recta().left <= 0:
-                x.speed = [Shuriken.bounce_positive(Shuriken), Shuriken.bounce_random(Shuriken)]
-                pygame.mixer.music.play(0)
-            if x.get_recta().right >= 750:
-                pygame.mixer.music.play(0)
-                x.speed = [Shuriken.bounce_negative(Shuriken), Shuriken.bounce_random(Shuriken)]
-
-            if x.get_recta().top <= 0:
-                pygame.mixer.music.play(0)
-                x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_positive(Shuriken)]
-
-            if x.get_recta().bottom >= 700:
-                pygame.mixer.music.play(0)
-                x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
-
-        if timer == 60:  # function of the timer
-            timer = 0
-            currenttime += 1
-        else:
-            timer += 1
 
         keysmovement = pygame.key.get_pressed()
         ninja_movement(keysmovement, ninja)
@@ -457,18 +462,17 @@ def screenlevel2(usertext, score2 = 0):
 
 # --------------------------------------Function for the level 3 screen----------------------------------------------#
 # GLOBAL SCORE
-score = 0
+
 
 
 def screenlevel3(usertext, score3):
-
-    global score, NINJA_HEALTH
+    global score, NINJA_HEALTH, do_shuriken, amount_shuriken
     score = 0
-
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
   # to manipulate the enemy cause it can't be rect
-    NINJA_HEALTH = 50  # HP of the player
-    darth_vader_bullets = []
+    NINJA_HEALTH = 3  # HP of the player
+    do_shuriken = True
+    play_music(3)
     pygame.display.set_caption('Level 3') # title
     currenttime = 0
     timer = 0  # initial values
@@ -482,14 +486,17 @@ def screenlevel3(usertext, score3):
                 sys.exit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:  # to go to the last screen
+                    amount_shuriken = []
+                    music3.stop()
                     running = mainscreen()
                     mainscreen()
-                    pygame.display.set_caption('Operation Moon light')
+                    pygame.display.set_caption('ninja dash')
 
-            if event.type == NINJAGOTHIT:  # when the player got hit it decreases to the player's HP
-                NINJA_HEALTH -= 10
 
             if NINJA_HEALTH <= 0:  # if you die it goes back to the principal screen
+                format = usertext + "/" + str(score)
+                info = "[" + format + "]"
+                save_score(info)
                 mainscreen()
                 flag = 0
 
@@ -510,11 +517,20 @@ def screenlevel3(usertext, score3):
                 pygame.mixer.music.play(0)
                 x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
 
-        if timer == 60:  # function of the timer
-            timer = 0
-            currenttime += 1
-        else:
-            timer += 1
+            if timer == 60:  # timer
+                timer = 0
+                currenttime += 1
+                score += 5
+            else:
+                timer += 1
+
+        if currenttime == 60:
+            format = usertext + "/" + str(score)
+            info ="[" +format+ "]"
+            save_score(info)
+            music3.stop()
+            running = mainscreen()
+
 
         keysmovement = pygame.key.get_pressed()
         ninja_movement(keysmovement, ninja)
@@ -621,10 +637,19 @@ def aboutscreen():
 
 
 # ----------------------------------Function for the top 5 leaderboard-------------------------------------------#
-# GLOBAL SCORE
-score = 0
+def format_str(top7):
+    text = ""
+    for x in top7:
+        text += x  + "\n"
+    return text
+
 def screenleaderboard(usertext, score):
     pygame.display.set_caption('Leaderboard')  # to write the Title
+    top7 = show_score()[:7]
+    top7string = format_str(top7)
+    print(top7)
+    print(top7string)
+    text = fontofsubtitle.render(top7string,0,(0,0,0))
     running = True
     while running:
         PRINCIPALSCREEN1.fill((0, 0, 0))  # to fill with white the background
@@ -640,12 +665,13 @@ def screenleaderboard(usertext, score):
 
         bgi = pygame.image.load("background images/void.jpg")
         PRINCIPALSCREEN1.blit(bgi, (0, 0))
+        PRINCIPALSCREEN1.blit(text,(70,65))
         pygame.display.update()  # updates every 60 FPS
         clock.tick(60)
 
 
 def save_score(info):
-    with open("score", "a") as f:
+    with open("score.txt", "a") as f:
         f.write(info+"\n")
 
 def show_score():
@@ -666,21 +692,24 @@ def show_score():
             else:
                 i += 1
         return make_number(list_scores)
-def make_number(list):
-    index = 0
-    number_list = []
-    dictionary = { }
-    while index != len(list):
-        number_start = 0
-        for x in list[index]:
-            if x == "/":
-                number_list += [int(list[index][number_start+1:-1])]
-                dictionary.update({int(list[index][number_start+1:-1]):index})
-                break
-            else:
-                number_start += 1
-        index += 1
-    return give_order(quicksort(number_list),dictionary,list)
+
+def make_number(lista):
+      index = 0
+      number_list = []
+      dictionary = { }
+      while index != len(lista):
+          number_start = 0
+
+          for x in lista[index]:
+              if x == "/":
+
+                  number_list += [int(lista[index][number_start+1:-1])]
+                  dictionary.update({int(lista[index][number_start+1:-1]):index})
+                  break
+              else:
+                  number_start += 1
+          index += 1
+      return give_order(quicksort(number_list),dictionary,lista)
 def quicksort(lista):
     if len(lista) <= 1:
         return lista
