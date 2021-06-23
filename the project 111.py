@@ -163,7 +163,7 @@ def mainscreen():
 
 
 NINJAGOTHIT = pygame.USEREVENT  # event when the ninja get damage
-NINJA_HEALTH = 50
+NINJA_HEALTH = 3
 # ----------------------------------------------- Ninja Class    -------------------------------------------------#
 class Ninja:
 
@@ -343,7 +343,7 @@ def screenlevel1(usertext):
                 sys.exit()
             if event.type == KEYDOWN:  # to go to the last screen with ESCAPE
                 if event.key == K_ESCAPE:
-                    running = False
+                    running = mainscreen()
                     pygame.display.set_caption('Operation Moon light')  # puts the title
 
             if event.type == NINJAGOTHIT: # if the ninja gets damage it decreases it's life life
@@ -371,19 +371,23 @@ def screenlevel1(usertext):
                 pygame.mixer.music.play(0)
                 x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
 
-        if timer == 60: # timer
-            timer = 0
-            currenttime += 1
-        else:
-            timer += 1
+            if timer == 60: # timer
+                timer = 0
+                currenttime += 1
+                score += 1
+            else:
+                timer += 1
 
+            if currenttime == 10:
+                pygame.quit()  
+                screenlevel2(usertext)
 
+        
         keysmovement = pygame.key.get_pressed()
         ninja_movement(keysmovement, ninja)
         drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, 1)
-
-        pygame.display.update()
         clock.tick(60)  # recursivity of the functions every 60 FPS
+        pygame.display.update()
 
 
 # ----------------------------------------Function for the level 2 function--------------------------------------------#
@@ -412,7 +416,7 @@ def screenlevel2(usertext, score2 = 0):
                 sys.exit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE: # to go to the last screen
-                    running = False
+                    running = mainscreen()
                     pygame.display.set_caption('Operation Moon light')
 
             if event.type == NINJAGOTHIT:  # when the ninja gets hit it decreases the ninja's life
@@ -477,7 +481,7 @@ def screenlevel3(usertext, score3):
                 sys.exit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:  # to go to the last screen
-                    running = False
+                    running = mainscreen()
                     mainscreen()
                     pygame.display.set_caption('Operation Moon light')
 
@@ -545,7 +549,7 @@ def screeninstructions():
                 sys.exit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE: # to go to the last screen
-                    running = False
+                    running = mainscreen()
                     pygame.display.set_caption('Operation Moon light')
 
         bgi = pygame.image.load("background images/Japanese-garden.jpg")
@@ -595,7 +599,7 @@ def aboutscreen():
                 sys.exit()
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:  # to go to the last screen
-                    running = False
+                    running = mainscreen()
                     pygame.display.set_caption('Operation Moon light')
 
 # It writes the text on the posicion x, y
@@ -630,7 +634,7 @@ def screenleaderboard(usertext, score):
                 sys.exit()
             if event.type == KEYDOWN:  # this function takes you to the last screen when u hit space
                 if event.key == K_ESCAPE:
-                    running = False
+                    running = mainscreen()
                     pygame.display.set_caption('Ninja dash')
 
         bgi = pygame.image.load("background images/void.jpg")
