@@ -2,6 +2,7 @@
 import pygame, sys
 import random  # so we can manipulate the random number that the enemy throws
 from pygame.locals import *
+import vlc
 
 # Principal Window Setup
 pygame.init()
