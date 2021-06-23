@@ -21,7 +21,7 @@ fontofsubtitle = pygame.font.Font(None, 30)
 fontofhp = pygame.font.Font(None, 30)
 
 # Texts
-textoftitle = fontoftitle.render("立竜の物語", 0, (255, 255, 255))
+#textoftitle = fontoftitle.render("立竜の物語", 0, (255, 255, 255))
 # the title says "Ritsuryu no monogatari" which means "La historia del dragón ascendente"
 textofsubtitle = fontofsubtitle.render("Entry your name", 0, (255, 255, 255))
 textofindication = fontofsubtitle.render("(Write a short name)", 0, (255, 255, 255))
@@ -172,7 +172,7 @@ def mainscreen():
         textsurface = fontofname.render(usertext, True, (255, 255, 255))
         PRINCIPALSCREEN1.blit(textsurface, (inputrectangle.x + 5, inputrectangle.y + 5))
         inputrectangle.w = max(50, textsurface.get_width() + 10)
-        PRINCIPALSCREEN1.blit(textoftitle, (125, 50))  # it writes the titles of the rectangles
+        #PRINCIPALSCREEN1.blit(textoftitle, (125, 50))  # it writes the titles of the rectangles
         PRINCIPALSCREEN1.blit(textofsubtitle, (50, 100))
         PRINCIPALSCREEN1.blit(textofindication, (50, 165))
         PRINCIPALSCREEN1.blit(textoflvl1, (120, 205))
@@ -324,9 +324,9 @@ def drawscreen(ninja, NINJA_HEALTH, usertext, currenttime, level):
 # -----------------------------------------Function for the level 1 screen---------------------------------------#
 
 
-def screenlevel1(usertext,score):
+def screenlevel1(usertext,score1):
     # calls global values
-    global  NINJA_HEALTH, Ninja_image, do_shuriken
+    global  NINJA_HEALTH, Ninja_image, do_shuriken, score
     do_shuriken = True
     score = 0  # score of the level
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
@@ -355,6 +355,7 @@ def screenlevel1(usertext,score):
             format = usertext + "/" + str(score)
             info = "[" + format + "]"  # and gives you your score
             save_score(info)
+            music1.stop()
             mainscreen()
             flag = 0
 
@@ -377,8 +378,9 @@ def screenlevel1(usertext,score):
             if rect.bottom >= 700:   # if it's on the bottom border it changes the direction to the top
                 pygame.mixer.music.play(0)
                 x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
-            if ninja.left >= rect.top >= ninja.right or ninja.left >= x.get_recta().bottom >= ninja.right:
-                print("a")
+            if ninja.left <= rect.right <= ninja.right and ninja.left <= rect.left <= ninja.right: # for a shuriken hitting the ninja
+                del x
+                NINJA_HEALTH -=1
 
 
             if timer == 60:  # timer
@@ -408,7 +410,7 @@ def screenlevel1(usertext,score):
 
 def screenlevel2(usertext, score2 = 0):
 
-    global  NINJA_HEALTH, do_shuriken, amount_shuriken
+    global  NINJA_HEALTH, do_shuriken, amount_shuriken, score
     do_shuriken = True
     score = 0
     ninja = pygame.Rect(225, 600, 50, 50)  # rectangle to manipulate the ninja
@@ -437,10 +439,11 @@ def screenlevel2(usertext, score2 = 0):
                 format = usertext + "/" + str(score)
                 info = "[" + format + "]"
                 save_score(info)
+                music2.stop()
                 mainscreen()
                 flag = 0
         for x in amount_shuriken:
-
+            rect = x.get_recta()
             if x.get_recta().left <= 0:
                 x.speed = [Shuriken.bounce_positive(Shuriken), Shuriken.bounce_random(Shuriken)]
                 pygame.mixer.music.play(0)
@@ -455,6 +458,9 @@ def screenlevel2(usertext, score2 = 0):
             if x.get_recta().bottom >= 700:
                 pygame.mixer.music.play(0)
                 x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
+            if ninja.left <= rect.right <= ninja.right and ninja.left <= rect.left <= ninja.right:
+                del x
+                NINJA_HEALTH -=1
 
             if timer == 60: # timer
                 timer = 0
@@ -514,11 +520,12 @@ def screenlevel3(usertext, score3):
                 format = usertext + "/" + str(score)
                 info = "[" + format + "]"
                 save_score(info)
+                music3.stop()
                 mainscreen()
                 flag = 0
 
         for x in amount_shuriken:
-
+            rect = x.get_recta()
             if x.get_recta().left <= 0:
                 x.speed = [Shuriken.bounce_positive(Shuriken), Shuriken.bounce_random(Shuriken)]
                 pygame.mixer.music.play(0)
@@ -533,6 +540,9 @@ def screenlevel3(usertext, score3):
             if x.get_recta().bottom >= 700:
                 pygame.mixer.music.play(0)
                 x.speed = [Shuriken.bounce_random(Shuriken), Shuriken.bounce_negative(Shuriken)]
+            if ninja.left <= rect.right <= ninja.right and ninja.left <= rect.left <= ninja.right:
+                del x
+                NINJA_HEALTH -= 1
 
             if timer == 60:  # timer
                 timer = 0
@@ -630,6 +640,7 @@ textofce = fontofsubtitle.render("Computer Engineering", 0, (255, 255, 255))
 def aboutscreen():
     pygame.display.set_caption('About')  # title of the window
     running = True
+    bg = pygame.image.load("background images/ninja style.jpg")
     while running:
         PRINCIPALSCREEN1.fill((0, 0, 0))  # to fill the screen
 
@@ -640,9 +651,10 @@ def aboutscreen():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:  # to go to the last screen
                     running = mainscreen()
-                    pygame.display.set_caption('Operation Moon light')
+                    pygame.display.set_caption('ninja dash')
 
 # It writes the text on the posicion x, y
+        PRINCIPALSCREEN1.blit(bg, (0, 0))
         PRINCIPALSCREEN1.blit(textoftitle1, (300, 50))
         PRINCIPALSCREEN1.blit(textofversion, (150, 100))
         PRINCIPALSCREEN1.blit(textofstudent1, (150, 150))
@@ -663,7 +675,7 @@ def aboutscreen():
 def format_str(top7):
     text = ""
     for x in top7:
-        text += x  + "\n"
+        text += x
     return text
 
 def screenleaderboard(usertext, score):
